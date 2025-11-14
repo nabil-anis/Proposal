@@ -1,3 +1,6 @@
+
+
+// FIX: Corrected the import statement for React and its hooks.
 import React, { useState, useEffect, useRef } from 'react';
 
 // --- SVG ICONS ---
@@ -8,14 +11,17 @@ const CrownIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
-const FlourishDivider = ({ className = "w-24 h-8 text-amber-400/50" }) => (
-    <svg className={className} viewBox="0 0 120 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 10 Q30 0, 60 10 T115 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M5 12 Q30 22, 60 12 T115 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+const FlourishDivider = ({ className = "w-32 h-10" }) => (
+    <svg className={className} viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50,10 C 20,10 10,0 2,10 C 10,20 20,10 50,10" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+        <path d="M50,10 C 80,10 90,0 98,10 C 90,20 80,10 50,10" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+        <path d="M50,10 m -5,-3 c 2.5,0 5,3 5,3 C 50,7 47.5,10 45,10 S 40,7 40,7 s 2.5,-3 5,-3" fill="currentColor" opacity="0.8" />
+        <path d="M50,10 m 5,-3 c -2.5,0 -5,3 -5,3 C 50,7 52.5,10 55,10 S 60,7 60,7 s -2.5,-3 -5,-3" fill="currentColor" opacity="0.8" />
     </svg>
 );
 
-const WaxSealIcon = ({ className = "" }) => (
+
+const WaxSealIcon = ({ className = "", isBreaking = false }) => (
     <svg className={`w-24 h-24 text-red-800/90 drop-shadow-lg ${className}`} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <filter id="wax-texture">
@@ -26,11 +32,51 @@ const WaxSealIcon = ({ className = "" }) => (
                 <feComposite in="light" in2="SourceAlpha" operator="in" result="textured"/>
             </filter>
         </defs>
-        <circle cx="50" cy="50" r="45" fill="#991b1b" filter="url(#wax-texture)"/>
-        <path d="M50 20c-10 0-15 15-25 15S5 40 5 50s5 15 15 15 15-5 25-15c10 10 15 15 25 15s15-5 15-15-5-15-15-15-15 5-25 15c-10-10-15-15-25-15z" fill="#b91c1c" opacity="0.6"/>
-        <g transform="translate(35, 38) scale(1.3)">
-         <CrownIcon className="w-8 h-8 text-amber-200/90" />
+        
+        <g className={isBreaking ? "seal-body-breaking" : ""}>
+          <circle cx="50" cy="50" r="45" fill="#991b1b" filter="url(#wax-texture)"/>
+          <path d="M50 20c-10 0-15 15-25 15S5 40 5 50s5 15 15 15 15-5 25-15c10 10 15 15 25 15s15-5 15-15-5-15-15-15-15 5-25 15c-10-10-15-15-25-15z" fill="#b91c1c" opacity="0.6"/>
         </g>
+        
+        <g className={isBreaking ? "seal-engraving-breaking" : ""}>
+          {/* Shadow (bottom-right) for engraved effect */}
+          <text
+              x="51"
+              y="58"
+              dominantBaseline="middle"
+              textAnchor="middle"
+              fill="#450a0a"
+              opacity="0.6"
+              fontSize="32"
+              fontFamily="'MedievalSharp', cursive"
+              style={{ letterSpacing: '0.1em' }}
+          >
+              nbl
+          </text>
+          {/* Highlight (top-left) for engraved effect */}
+          <text
+              x="49"
+              y="56"
+              dominantBaseline="middle"
+              textAnchor="middle"
+              fill="#fca5a5"
+              opacity="0.6"
+              fontSize="32"
+              fontFamily="'MedievalSharp', cursive"
+              style={{ letterSpacing: '0.1em' }}
+          >
+              nbl
+          </text>
+        </g>
+        
+        {isBreaking && (
+            <g className="cracks" stroke="#450a0a" strokeWidth="1.5" strokeLinecap="round">
+                <path d="M50,50 L 65,35" className="crack-1" />
+                <path d="M50,50 L 30,40" className="crack-2" />
+                <path d="M50,50 L 55,70" className="crack-3" />
+                <path d="M50,50 L 75,60" className="crack-4" />
+            </g>
+        )}
     </svg>
 );
 
@@ -39,34 +85,22 @@ const GrandTribunal: React.FC = () => {
     const [status, setStatus] = useState<'idle' | 'deliberating' | 'verdict'>('idle');
     const [verdict, setVerdict] = useState('');
     const [progress, setProgress] = useState(0);
-    const isFirstVerdictRef = useRef(true);
 
     const verdicts = [
-        "Close, but my reflection still wins.",
-        "Destined for greatness… elsewhere.",
-        "Brave, foolish, and beautiful.",
-        "Radiant… but slightly burnt at the edges.",
-        "Destiny pauses… then sighs.",
-        "A heart full of hope, yet lacking finesse.",
-        "A noble attempt… or an amusing failure.",
-        "The stars frown upon thee today.",
-        "A sparkling disappointment.",
-        "The council debates… and unanimously declines.",
-        "The council chuckles… and votes ‘no.’",
-        "Not quite, but fabulously close.",
-        "Your aura confuses the council.",
-        "The mirror disagrees.",
-        "The universe giggles at thee.",
-        "Admirable, but not today.",
-        "The stars whisper… ‘meh’.",
-        "A charming disaster.",
-        "Your aura is… complicated.",
-        "A delightful mistake.",
-        "Fate is amused, not impressed.",
-        "Glorious, yet tragically human.",
-        "Divine mischief detected.",
-        "Unworthy, but charming.",
-        "A rare soul, possibly divine. Further evaluation required."
+        "The council confirms: I was, in fact, being 'a bit much'.",
+        "Verdict: Guilty. Of excessive jesting.",
+        "The stars decree: A more thoughtful approach is required.",
+        "A formal apology has been deemed... acceptable.",
+        "My methods have been found... unorthodox.",
+        "The council suggests I try 'being normal' for a change.",
+        "It is decreed: My sense of humor is an acquired taste.",
+        "The universe whispers: 'Maybe tone it down a bit.'",
+        "A sparkling miscalculation on my part.",
+        "The council agrees: Poking is not a universal love language.",
+        "Destiny pauses... then face-palms.",
+        "My charm has been temporarily overruled.",
+        "Unanimous decision: I should have known better.",
+        "The court finds my shenanigans... shenanigan-y."
     ];
 
     const startTribunal = () => {
@@ -88,13 +122,7 @@ const GrandTribunal: React.FC = () => {
                     if (prev >= 100) {
                         clearInterval(interval);
                         setStatus('verdict');
-                        if (isFirstVerdictRef.current) {
-                            setVerdict("Close, but my reflection still wins.");
-                            isFirstVerdictRef.current = false;
-                        } else {
-                            const otherVerdicts = verdicts.filter(v => v !== "Close, but my reflection still wins.");
-                            setVerdict(otherVerdicts[Math.floor(Math.random() * otherVerdicts.length)]);
-                        }
+                        setVerdict(verdicts[Math.floor(Math.random() * verdicts.length)]);
                         return 100;
                     }
                     return prev + 1;
@@ -102,21 +130,21 @@ const GrandTribunal: React.FC = () => {
             }, 45);
             return () => clearInterval(interval);
         }
-    }, [status]);
+    }, [status, verdicts]);
 
     if (status === 'idle') {
         return (
             <div className="text-center">
                 <button
                   onClick={startTribunal}
-                  className="group relative inline-flex items-center justify-center px-8 sm:px-12 py-3 sm:py-4 font-cinzel text-lg font-bold text-amber-100 tracking-wider rounded-md shadow-lg overflow-hidden transition-all duration-300 transform hover:scale-105 bg-[#991b1b] border-2 border-red-950 hover:border-amber-300/50 hover:shadow-yellow-glow"
-                  aria-label="Decision Pending"
+                  className="royal-button group relative inline-flex items-center justify-center px-8 sm:px-12 py-3 sm:py-4 text-lg text-amber-100 rounded-md shadow-lg"
+                  aria-label="Await the Council's Judgment"
                 >
                   <CrownIcon className="inline-block w-5 h-5 mr-3 text-amber-300" />
-                  DECISION PENDING
+                  AWAIT JUDGMENT
                   <CrownIcon className="inline-block w-5 h-5 ml-3 text-amber-300" />
                 </button>
-                <p className="text-stone-400 italic text-sm mt-4">(Sealed with the finest wax and utmost importance.)</p>
+                <p className="text-stone-400 italic text-sm mt-4 font-body">(Let the official record show my contrition.)</p>
             </div>
         );
     }
@@ -125,20 +153,20 @@ const GrandTribunal: React.FC = () => {
         <div className="w-full max-w-md mx-auto p-6 bg-stone-900 border-2 border-stone-700 rounded-lg shadow-lg animate-fade-in text-center">
              {status === 'deliberating' && (
                 <>
-                    <h3 className="font-uncial text-lg text-stone-300 animate-reveal" style={{animationDelay: '0s'}}>Ah, so thou hast dared to inquire...</h3>
-                    <p className="font-cinzel text-stone-400 mt-2 animate-reveal" style={{animationDelay: '1s'}}>The Council shall now deliberate.</p>
+                    <h3 className="font-heading text-lg text-stone-300 animate-reveal" style={{animationDelay: '0s'}}>The Council reflects upon my actions...</h3>
+                    <p className="font-body text-stone-400 mt-2 animate-reveal" style={{animationDelay: '1s'}}>A period of solemn introspection is underway.</p>
                     <div className="w-full bg-stone-700 rounded-full h-2.5 mt-6 animate-reveal" style={{animationDelay: '2s'}}>
-                        <div className="bg-amber-400 h-2.5 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}></div>
+                        <div className="bg-amber-500 h-2.5 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}></div>
                     </div>
-                    <p className="text-amber-400/80 mt-2 text-sm animate-reveal" style={{animationDelay: '2.5s'}}>Measuring Worthiness...</p>
+                    <p className="text-amber-400/80 mt-2 text-sm animate-reveal" style={{animationDelay: '2.5s'}}>Measuring Remorsefulness...</p>
                 </>
              )}
              {status === 'verdict' && (
                 <div className="animate-fade-in">
-                    <h3 className="font-uncial text-xl text-amber-300">The Verdict is In:</h3>
-                    <p className="font-cinzel text-2xl text-white my-4">"{verdict}"</p>
-                    <button onClick={resetTribunal} className="px-6 py-2 font-cinzel text-stone-200 bg-stone-700 border border-stone-500 rounded hover:bg-stone-600 transition-colors">
-                        Try Again
+                    <h3 className="font-heading text-xl text-amber-300">The Judgment is In:</h3>
+                    <p className="font-body text-2xl text-white my-4">"{verdict}"</p>
+                    <button onClick={resetTribunal} className="px-6 py-2 font-body text-amber-200 bg-transparent border border-amber-400/50 rounded hover:bg-amber-400/10 hover:border-amber-400 transition-colors">
+                        Reflect Anew
                     </button>
                 </div>
              )}
@@ -159,7 +187,7 @@ const App: React.FC = () => {
 
     setTimeout(() => {
         setIsUnsealed(true);
-    }, 600); // Corresponds to seal break animation duration
+    }, 800); // Corresponds to seal break animation duration
   };
 
   useEffect(() => {
@@ -202,8 +230,8 @@ const App: React.FC = () => {
         {!isUnsealed && (
             <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-stone-900/80 backdrop-blur-sm animate-fade-in">
                 <div className="text-center text-stone-300 p-8 flex flex-col items-center">
-                    <h1 className="font-uncial text-2xl sm:text-4xl text-amber-100 mb-4" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>A Proposal of Utmost Importance</h1>
-                    <p className="mt-1 mb-8 text-stone-400 font-cinzel">Sealed with Divine Authority</p>
+                    <h1 className="font-heading text-2xl sm:text-4xl text-amber-100 mb-4" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>An Apology of Utmost Importance</h1>
+                    <p className="mt-1 mb-8 text-stone-400 font-body">Sealed with Sincere Regret</p>
 
                     <div 
                         className="relative cursor-pointer group"
@@ -212,11 +240,11 @@ const App: React.FC = () => {
                     >
                         <div className="w-20 h-56 sm:w-24 sm:h-64 bg-gradient-to-r from-[#d3c4a8] via-[#fdfaef] to-[#d3c4a8] rounded-lg shadow-[5px_5px_15px_rgba(0,0,0,0.5),_inset_8px_0_10px_-5px_rgba(0,0,0,0.25),_inset_-8px_0_10px_-5px_rgba(0,0,0,0.25)] transition-transform duration-300 group-hover:scale-105"></div>
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <WaxSealIcon className={isSealBreaking ? 'animate-seal-break' : 'animate-pulse-shimmer'} />
+                            <WaxSealIcon className="animate-pulse-shimmer" isBreaking={isSealBreaking} />
                         </div>
                     </div>
                     
-                    <p className="mt-8 font-cinzel text-lg tracking-wider text-amber-200/80">Click the Seal to Unfurl</p>
+                    <p className="mt-8 font-body text-lg tracking-wider text-amber-200/80">Click the Seal to Unfurl</p>
                 </div>
             </div>
         )}
@@ -227,11 +255,11 @@ const App: React.FC = () => {
                     <div style={{ transform: `translateY(${offsetY * 0.2}px)` }}>
                       <CrownIcon className="w-12 h-12 text-amber-400/90 mb-2 drop-shadow-[0_2px_4px_rgba(251,191,36,0.5)]"/>
                     </div>
-                     <h1 className="font-uncial text-3xl sm:text-5xl font-bold text-amber-100" style={{
+                     <h1 className="font-heading text-3xl sm:text-5xl font-bold text-amber-100" style={{
                        textShadow: '2px 2px 5px rgba(0,0,0,0.5)',
                        transform: `translateY(${offsetY * 0.15}px)`
                        }}>
-                        A Proposal of Utmost Importance
+                        An Apology of Utmost Importance
                       </h1>
                       <div className="flex items-center justify-center" style={{ transform: `translateY(${offsetY * 0.12}px)` }}>
                          <p className="text-stone-400 italic mt-2 text-sm sm:text-lg">Anno Domini, This Year of Grace</p>
@@ -242,42 +270,47 @@ const App: React.FC = () => {
                     <div className="scroll-ends top"></div>
                     <main className="parchment text-[#3a2f2f] p-8 sm:p-16">
                         <div className="text-base sm:text-lg lg:text-xl leading-relaxed text-left max-w-prose space-y-6 sm:space-y-8 mx-auto">
-                          <p className="text-center text-stone-600 scroll-fade-in" style={{transitionDelay: '50ms'}}>To Whom It May Concern (and be dazzled):</p>
+                          <p className="text-center text-stone-600 scroll-fade-in" style={{transitionDelay: '50ms'}}>To the Esteemed Maleeha:</p>
                           
                           <p className="scroll-fade-in" style={{transitionDelay: '100ms'}}>
-                              <span className="font-cinzel text-5xl sm:text-6xl float-left mr-3 mt-1 text-[#991b1b]">D</span>earest individuals of considerable (though not quite comparable) merit,
+                              <span className="font-body text-5xl sm:text-6xl float-left mr-3 mt-1 text-[#991b1b]">I</span>t has come to my attention—through a period of profound and deeply humbling introspection—that my recent conduct may have been perceived as... less than ideal.
                           </p>
                           <p className="scroll-fade-in" style={{transitionDelay: '200ms'}}>
-                            It is with great magnanimity—and perhaps a divine whisper of benevolence—that I, a specimen of such <span className="text-[#991b1b] font-semibold">rare and radiant perfection</span>, deign to pen these words. Indeed, the very parchment upon which this declaration rests trembles in reverence at the magnitude of what it bears.
+                            Indeed, it appears my particular brand of jesting, which I typically dispense with magnanimous flair, may not be universally appreciated. The very notion that my attempts at humor—my <span className="text-[#991b1b] font-semibold">relentless poking</span>, if you will—could cause anything other than pure delight has shaken the very foundations of my gilded worldview.
                           </p>
                           <p className="scroll-fade-in" style={{transitionDelay: '300ms'}}>
-                            You see, I find myself in a predicament most peculiar: more than one soul has managed to capture faint fragments of my noble heart. A heart, I must remind you, forged from the purest alloys of courage, wit, irresistible charm, and just a whisper of humility (though not too much, for honesty forbids deceit).
+                            I now understand that not everyone wishes to be the subject of such... pointed amusement. This realization has been a trial, I assure you. A heart as grand as mine does not easily concede error.
                           </p>
-                          <blockquote className="border-l-0 text-center italic text-stone-600/90 my-8 scroll-fade-in" style={{transitionDelay: '400ms'}}>
-                              “It is not arrogance if one is objectively magnificent.”
+                          <blockquote className="border-l-0 text-center italic text-stone-700/90 my-8 scroll-fade-in font-body" style={{transitionDelay: '400ms'}}>
+                              “Even the sun must admit when its rays have been a trifle too harsh.”
                           </blockquote>
                           <p className="scroll-fade-in" style={{transitionDelay: '500ms'}}>
-                            As a being of impeccable taste and staggering intellect, I find myself unable—nay, <span className="font-cinzel tracking-wider">unwilling</span>—to choose between mortals so evenly matched in near-mediocrity. Each is, in their own modest way, splendid… though naturally, none quite measure up to the divine phenomenon that is myself.
+                           Therefore, let this decree serve as a formal record of my sentiment. I was wrong. The poking was, perhaps, excessive. My wit, though undeniably dazzling, was misapplied.
                           </p>
                            <p className="scroll-fade-in" style={{transitionDelay: '600ms'}}>
-                            My beauty is the stuff of legend. My intellect, unrivalled. My excellence, a guiding light to lesser beings who wander this dull world without the blessing of my reflection. Surely, one must grasp the gravity of such glory.
+                            For this, I am truly sorry. My intellect, usually unrivalled, failed to account for this variable. My excellence, a guiding light to lesser beings, momentarily flickered. It is a burden I shall carry with grace and dignity.
                           </p>
 
                           <div className="bg-red-900/5 border-l-4 border-[#991b1b] p-6 my-8 scroll-fade-in" style={{transitionDelay: '700ms'}}>
-                              <h3 className="font-uncial text-xl text-center text-stone-800/90 mb-4">Therefore, I Hereby Propose:</h3>
+                              <h3 className="font-heading text-xl text-center text-stone-800/90 mb-4">Therefore, I Hereby Proclaim:</h3>
                               <p>
-                                  That a Grand Council be convened—composed of the finest minds and most unbiased hearts—to deliberate upon a single sacred question: Who among all creation is <span className="font-cinzel tracking-wider">truly worthy</span> of the supreme honour of being chosen by me?
+                                That I formally apologize to you, Maleeha. I shall endeavor to restrain my more... pokey instincts in future interactions, and consult the Grand Council of My Own Conscience before engaging in such antics again.
                               </p>
                           </div>
 
                           <p className="scroll-fade-in" style={{transitionDelay: '800ms'}}>
-                            I shall await the verdict with bated breath (though not excessively, as my magnificence is in high demand). Whosoever is deemed worthy shall receive the incomparable privilege of basking in my radiant presence for all eternity—or, at the very least, until supper.
+                            I shall await your judgment on this apology with bated breath. The fate of my considerable, yet momentarily humbled, ego rests in your hands.
                           </p>
                           <div className="text-center scroll-fade-in pt-4" style={{transitionDelay: '900ms'}}>
-                              <p>With overflowing grace and staggering humility,</p>
-                              <p className="font-cinzel text-2xl tracking-widest mt-4">THE ONE AND ONLY</p>
-                              <p className="text-stone-600/80 italic text-sm">(Whose name need not be uttered, for it already echoes through legend.)</p>
+                              <p>With overflowing regret and staggering humility,</p>
+                              <p className="font-body text-2xl tracking-widest mt-4">THE ONE AND ONLY</p>
+                              <p className="text-stone-600/80 italic text-sm">(Who is capable of admitting when he is wrong, on very rare occasions.)</p>
                           </div>
+
+                          <div className="text-right mt-12 scroll-fade-in" style={{transitionDelay: '1000ms'}}>
+                              <p className="font-script text-3xl text-stone-700/90 tracking-wider">by nbl</p>
+                          </div>
+
                         </div>
                     </main>
                     <div className="scroll-ends bottom"></div>
@@ -285,15 +318,15 @@ const App: React.FC = () => {
 
                 <footer className="relative z-20 w-full max-w-3xl text-center mt-12 space-y-8 animate-fade-in" style={{ animationDelay: '1.2s' }}>
                     <div className="border border-amber-800/30 bg-stone-800/20 p-6 italic text-stone-300 text-lg rounded">
-                        “Until the Grand Council convenes and renders its verdict, I shall await—<span className="font-cinzel font-bold tracking-wider text-amber-200">ever radiant, ever desirable.</span>”
+                        “Let the record show that on this day, humility was demonstrated. It was exhausting, but necessary.”
                     </div>
 
                     <GrandTribunal />
                     
                     <div>
-                        <FlourishDivider className="w-16 h-8 mx-auto text-stone-500/60" />
+                        <FlourishDivider className="w-24 h-8 mx-auto text-stone-500/60" />
                         <p className="mt-2 text-base text-stone-500">
-                          Composed with unparalleled eloquence and delivered with supreme confidence.
+                          Composed with unparalleled regret and delivered with supreme sincerity.
                         </p>
                     </div>
                 </footer>
@@ -368,16 +401,7 @@ const App: React.FC = () => {
           animation: reveal 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        @keyframes seal-break {
-          0% { transform: scale(1); opacity: 1; }
-          20% { transform: scale(1.1) rotate(-5deg); }
-          40% { transform: scale(1.05) rotate(5deg); }
-          60% { transform: scale(1.2); opacity: 0.8; }
-          100% { transform: scale(0.8); opacity: 0; filter: blur(5px); }
-        }
-        .animate-seal-break {
-          animation: seal-break 0.6s ease-out forwards;
-        }
+        /* --- WAX SEAL ANIMATIONS --- */
 
         @keyframes pulse-shimmer {
           0%, 100% {
@@ -386,11 +410,37 @@ const App: React.FC = () => {
           }
           50% {
             transform: scale(1.03);
-            filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1)) drop-shadow(0 0 10px rgba(253, 224, 71, 0.7));
+            filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1)) drop-shadow(0 0 15px rgba(253, 224, 71, 0.8));
           }
         }
         .animate-pulse-shimmer {
           animation: pulse-shimmer 3s infinite ease-in-out;
+        }
+
+        .cracks path {
+            opacity: 0;
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+        }
+        .cracks .crack-1 { animation: crack-draw 0.3s ease-out 0.1s forwards; }
+        .cracks .crack-2 { animation: crack-draw 0.2s ease-out 0.2s forwards; }
+        .cracks .crack-3 { animation: crack-draw 0.3s ease-out 0.25s forwards; }
+        .cracks .crack-4 { animation: crack-draw 0.2s ease-out 0.3s forwards; }
+
+        @keyframes crack-draw {
+            to {
+                opacity: 0.8;
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .seal-body-breaking, .seal-engraving-breaking {
+            animation: seal-shatter 0.5s ease-in-out 0.3s forwards;
+        }
+
+        @keyframes seal-shatter {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0); }
+            100% { transform: scale(0.9) rotate(10deg); opacity: 0; filter: blur(8px); }
         }
 
         @keyframes unfurl {
