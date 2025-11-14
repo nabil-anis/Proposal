@@ -1,5 +1,3 @@
-
-
 // FIX: Corrected the import statement for React and its hooks.
 import React, { useState, useEffect, useRef } from 'react';
 
@@ -31,42 +29,29 @@ const WaxSealIcon = ({ className = "", isBreaking = false }) => (
                 </feDiffuseLighting>
                 <feComposite in="light" in2="SourceAlpha" operator="in" result="textured"/>
             </filter>
+            <filter id="heat-distortion" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.03 0.06" numOctaves="2" seed="2" result="turbulence">
+                    <animate attributeName="baseFrequency" dur="8s" values="0.03 0.06;0.04 0.08;0.03 0.06" repeatCount="indefinite" />
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="2.5" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
         </defs>
         
-        <g className={isBreaking ? "seal-body-breaking" : ""}>
-          <circle cx="50" cy="50" r="45" fill="#991b1b" filter="url(#wax-texture)"/>
-          <path d="M50 20c-10 0-15 15-25 15S5 40 5 50s5 15 15 15 15-5 25-15c10 10 15 15 25 15s15-5 15-15-5-15-15-15-15 5-25 15c-10-10-15-15-25-15z" fill="#b91c1c" opacity="0.6"/>
-        </g>
-        
-        <g className={isBreaking ? "seal-engraving-breaking" : ""}>
-          {/* Shadow (bottom-right) for engraved effect */}
-          <text
-              x="51"
-              y="58"
-              dominantBaseline="middle"
-              textAnchor="middle"
-              fill="#450a0a"
-              opacity="0.6"
-              fontSize="32"
-              fontFamily="'MedievalSharp', cursive"
-              style={{ letterSpacing: '0.1em' }}
-          >
-              nbl
-          </text>
-          {/* Highlight (top-left) for engraved effect */}
-          <text
-              x="49"
-              y="56"
-              dominantBaseline="middle"
-              textAnchor="middle"
-              fill="#fca5a5"
-              opacity="0.6"
-              fontSize="32"
-              fontFamily="'MedievalSharp', cursive"
-              style={{ letterSpacing: '0.1em' }}
-          >
-              nbl
-          </text>
+        <g filter={isBreaking ? "none" : "url(#heat-distortion)"}>
+            <g>
+                <g className={isBreaking ? "seal-body-breaking" : ""}>
+                    <path d="M50,50 L95,50 A45,45 0 0 0 50,5 Z" fill="#991b1b" filter="url(#wax-texture)" className="seal-piece-1"/>
+                    <path d="M50,50 L50,5 A45,45 0 0 0 5,50 Z" fill="#991b1b" filter="url(#wax-texture)" className="seal-piece-2"/>
+                    <path d="M50,50 L5,50 A45,45 0 0 0 50,95 Z" fill="#991b1b" filter="url(#wax-texture)" className="seal-piece-3"/>
+                    <path d="M50,50 L50,95 A45,45 0 0 0 95,50 Z" fill="#991b1b" filter="url(#wax-texture)" className="seal-piece-4"/>
+                    <path d="M50 20c-10 0-15 15-25 15S5 40 5 50s5 15 15 15 15-5 25-15c10 10 15 15 25 15s15-5 15-15-5-15-15-15-15 5-25 15c-10-10-15-15-25-15z" fill="#b91c1c" opacity="0.6" className="seal-highlight"/>
+                </g>
+                
+                <g className={isBreaking ? "seal-engraving-breaking" : ""}>
+                    <text x="51" y="58" dominantBaseline="middle" textAnchor="middle" fill="#450a0a" opacity="0.6" fontSize="32" fontFamily="'MedievalSharp', cursive" style={{ letterSpacing: '0.1em' }}>nbl</text>
+                    <text x="49" y="56" dominantBaseline="middle" textAnchor="middle" fill="#fca5a5" opacity="0.6" fontSize="32" fontFamily="'MedievalSharp', cursive" style={{ letterSpacing: '0.1em' }}>nbl</text>
+                </g>
+            </g>
         </g>
         
         {isBreaking && (
@@ -433,15 +418,42 @@ const App: React.FC = () => {
                 stroke-dashoffset: 0;
             }
         }
+        
+        .seal-body-breaking .seal-piece-1,
+        .seal-body-breaking .seal-piece-2,
+        .seal-body-breaking .seal-piece-3,
+        .seal-body-breaking .seal-piece-4 {
+            transform-origin: center;
+        }
+        .seal-body-breaking .seal-piece-1 { animation: shatter-1 0.7s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.1s forwards; }
+        .seal-body-breaking .seal-piece-2 { animation: shatter-2 0.7s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.1s forwards; }
+        .seal-body-breaking .seal-piece-3 { animation: shatter-3 0.7s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.1s forwards; }
+        .seal-body-breaking .seal-piece-4 { animation: shatter-4 0.7s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.1s forwards; }
+        .seal-body-breaking .seal-highlight { animation: seal-shatter-fade 0.5s ease-out 0.1s forwards; }
+        .seal-engraving-breaking { animation: seal-engraving-shatter 0.4s ease-in 0.1s forwards; }
 
-        .seal-body-breaking, .seal-engraving-breaking {
-            animation: seal-shatter 0.5s ease-in-out 0.3s forwards;
+        @keyframes shatter-1 { /* Top-Right */
+            to { transform: translate(40px, -35px) rotate(55deg) scale(0.4); opacity: 0; }
+        }
+        @keyframes shatter-2 { /* Top-Left */
+            to { transform: translate(-35px, -40px) rotate(-50deg) scale(0.5); opacity: 0; }
+        }
+        @keyframes shatter-3 { /* Bottom-Left */
+            to { transform: translate(-40px, 35px) rotate(-65deg) scale(0.4); opacity: 0; }
+        }
+        @keyframes shatter-4 { /* Bottom-Right */
+            to { transform: translate(35px, 40px) rotate(45deg) scale(0.6); opacity: 0; }
         }
 
-        @keyframes seal-shatter {
-            0% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0); }
-            100% { transform: scale(0.9) rotate(10deg); opacity: 0; filter: blur(8px); }
+        @keyframes seal-shatter-fade {
+            to { opacity: 0; transform: scale(0.8); }
         }
+
+        @keyframes seal-engraving-shatter {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.7); opacity: 0; filter: blur(5px); }
+        }
+
 
         @keyframes unfurl {
           from {
